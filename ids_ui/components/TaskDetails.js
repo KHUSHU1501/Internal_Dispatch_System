@@ -1,4 +1,4 @@
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
@@ -7,9 +7,12 @@ export default function TaskDetails(props) {
     const [editedTask, setEditedTask] = useState(props.task);
 
     const handleDelete = async () => {
-        const response = await fetch(`https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks/${props.task._id}`, {
-            method: 'DELETE',
-        });
+        const response = await fetch(
+            `https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks/${props.task._id}`,
+            {
+                method: 'DELETE',
+            }
+        );
 
         if (response.ok) {
             router.push(`/tasks`);
@@ -21,53 +24,123 @@ export default function TaskDetails(props) {
         }
     };
 
-    const handleUpdate = async () => {
-        const response = await fetch(`https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks/${props.task._id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(editedTask),
-        });
+    const handleUpdate = async (e) => {
+
+        e.preventDefault();
+        console.log(editedTask);
+        const response = await fetch(
+            `https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks/${props.task._id}`,
+            {
+                method: 'PUT',
+                body: JSON.stringify(editedTask),
+            }
+        );
 
         if (response.ok) {
             // Task updated successfully
             // Perform any additional actions if required
+            router.push(`/tasks`);
         } else {
             // Task update failed, handle the error
             console.log('Error updating task');
         }
     };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setEditedTask((prevTask) => ({
-            ...prevTask,
-            [name]: value,
-        }));
-    };
+    // const handleChange = (e) => {
+    //     const { name, value } = e.target;
+    //     setEditedTask((prevTask) => ({
+    //         ...prevTask,
+    //         [name]: value,
+    //     }));
+    // };
 
     return (
-        <>
-            <Container>
-                <Row>
-                    <Col md>
-                        <strong>The details of the patient {props.task?.patient} are below:</strong><br /><br />
-                        <strong>Patient:</strong> <input type="text" name="patient" value={editedTask.patient} onChange={handleChange} /><br /><br />
-                        <strong>Destination:</strong> <input type="text" name="destination" value={editedTask.destination} onChange={handleChange} /><br /><br />
-                        <strong>Location:</strong> <input type="text" name="location" value={editedTask.location} onChange={handleChange} /><br /><br />
-                        <strong>Isolation:</strong> <input type="checkbox" name="isolation" checked={editedTask.isolation} onChange={handleChange} /><br /><br />
-                        <strong>Notes:</strong> <textarea name="notes" value={editedTask.notes} onChange={handleChange}></textarea><br /><br />
-                        <strong>Requestor:</strong> <input type="text" name="requestor" value={editedTask.requestor} onChange={handleChange} /><br /><br />
-                        <strong>Type:</strong> <input type="text" name="type" value={editedTask.type} onChange={handleChange} /><br /><br />
-                        <Button variant="danger" onClick={handleDelete}>Delete</Button>{' '}
-                        <Button variant="primary" onClick={handleUpdate}>Update</Button>
-                    </Col>
-                </Row>
-            </Container>
-        </>
+        <Container>
+            <Row>
+                <Col md={6}>
+                    <br />
+                    <Form onSubmit={handleUpdate}>
+                        <Form.Group controlId="patient">
+                            <Form.Label><strong>Patient:</strong></Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="patient"
+                                value={editedTask.patient}
+                                onChange={(e) => setEditedTask({ ...editedTask, patient: e.target.value })}
+                            />
+                        </Form.Group>
+
+                        <Form.Group controlId="destination">
+                            <Form.Label><strong>Destination:</strong></Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="destination"
+                                value={editedTask.destination}
+                                onChange={(e) => setEditedTask({ ...editedTask, destination: e.target.value })}
+                            />
+                        </Form.Group>
+
+                        <Form.Group controlId="location">
+                            <Form.Label><strong>Location:</strong></Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="location"
+                                value={editedTask.location}
+                                onChange={(e) => setEditedTask({ ...editedTask, location: e.target.value })}
+                            />
+                        </Form.Group>
+
+                        <Form.Group controlId="isolation">
+                            <Form.Check
+                                type="checkbox"
+                                name="isolation"
+                                label={<strong>Isolation:</strong>}
+                                checked={editedTask.isolation}
+                                onChange={(e) => setEditedTask({ ...editedTask, isolation: e.target.checked })}
+                            />
+                        </Form.Group>
+
+                        <Form.Group controlId="notes">
+                            <Form.Label><strong>Notes:</strong></Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                name="notes"
+                                value={editedTask.notes}
+                                onChange={(e) => setEditedTask({ ...editedTask, notes: e.target.value })}
+                            />
+                        </Form.Group>
+
+                        <Form.Group controlId="requestor">
+                            <Form.Label><strong>Requestor:</strong></Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="requestor"
+                                value={editedTask.requestor}
+                                onChange={(e) => setEditedTask({ ...editedTask, requestor: e.target.value })}
+                            />
+                        </Form.Group>
+
+                        <Form.Group controlId="type">
+                            <Form.Label><strong>Type:</strong></Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="type"
+                                value={editedTask.type}
+                                onChange={(e) => setEditedTask({ ...editedTask, type: e.target.value })}
+                            />
+                        </Form.Group>
+                        <br />
+                        <div className="mb-3">
+                            <Button variant="danger" onClick={handleDelete} className="mr-2">
+                                Delete
+                            </Button> &nbsp;
+                            <Button variant="primary" type="submit">
+                                Update
+                            </Button>
+                        </div>
+                    </Form>
+                </Col>
+            </Row>
+        </Container>
     );
 }
-
-
-

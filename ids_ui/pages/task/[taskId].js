@@ -26,7 +26,7 @@ const TaskDetailPage = () => {
 
     return (
         <div>
-            <h1>Task Details Page</h1>
+            <h1>Task Details: {task.patient}</h1>
             <TaskDetails task={task} />
         </div>
     );

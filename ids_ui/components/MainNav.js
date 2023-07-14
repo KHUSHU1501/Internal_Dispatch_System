@@ -8,7 +8,7 @@ export default function MainNav() {
       <>
          <Navbar className="fixed-top navbar-dark bg-dark" bg="light" expand="lg">
             <Container>
-               <Navbar.Brand>Internal Dispatch System</Navbar.Brand>
+               <Navbar.Brand href='/' passHref legacyBehavior>Internal Dispatch System</Navbar.Brand>
                <Navbar.Toggle aria-controls="basic-navbar-nav" />
                <Navbar.Collapse id="basic-navbar-nav">
                   <Nav className="me-auto">
