@@ -1,30 +1,34 @@
-import { useRouter } from 'next/router';
-import useSWR from 'swr';
-import { useState, useRef } from 'react';
-import NewTaskForm from '../components/NewTaskForm';
-import Button from 'react-bootstrap/Button';
+import { useRouter } from "next/router";
+import useSWR from "swr";
+import { useState, useRef } from "react";
+import NewTaskForm from "../components/NewTaskForm";
+import Button from "react-bootstrap/Button";
 import { getToken } from "../lib/authenticate";
-import { Table, Container, Row, Col } from 'react-bootstrap';
+import { Table, Container, Row, Col } from "react-bootstrap";
 
 const fetcher = async (url) => {
-  const response = await fetch(url, { headers: { Authorization: `JWT ${getToken()}` } });
+  const response = await fetch(url, {
+    headers: { Authorization: `JWT ${getToken()}` },
+  });
   return response.json();
 };
 
 const TaskPage = () => {
   const router = useRouter();
-  const { data: tasks, error, mutate } = useSWR(
-    'https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks',
-    fetcher
-  );
+  const {
+    data: tasks,
+    error,
+    mutate,
+  } = useSWR("https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks", fetcher);
+
   const [newTask, setNewTask] = useState({
-    patient: '',
-    destination: '',
-    location: '',
+    patient: "",
+    destination: "",
+    location: "",
     isolation: false,
-    notes: '',
-    requestor: '',
-    type: '',
+    notes: "",
+    requestor: "",
+    type: "",
   });
   const inputRef = useRef();
 
@@ -39,12 +43,12 @@ const TaskPage = () => {
     const token = getToken();
 
     const response = await fetch(
-      'https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks',
+      "https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks",
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `JWT ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `JWT ${token}`,
         },
         body: JSON.stringify(newTask),
       }
@@ -52,29 +56,24 @@ const TaskPage = () => {
 
     if (response.ok) {
       setNewTask({
-        patient: '',
-        destination: '',
-        location: '',
+        patient: "",
+        destination: "",
+        location: "",
         isolation: false,
-        notes: '',
-        requestor: '',
-        type: '',
+        notes: "",
+        requestor: "",
+        type: "",
       });
       inputRef.current.focus();
 
-      const updatedTasks = await fetch(
-        'https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks',
+      const updatedTasks = fetch(
+        "https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks",
         fetcher
       );
-      const updatedTasksData = await updatedTasks.json();
-
-      if (updatedTasksData) {
-        // Update the tasks data using the mutate function
-        mutate(updatedTasksData);
-      }
+      mutate((await updatedTasks).json());
     } else {
       // Task addition failed, handle the error
-      console.log('Error adding task');
+      console.log("Error adding task");
     }
   };
 
@@ -83,9 +82,9 @@ const TaskPage = () => {
     const response = await fetch(
       `https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks/${taskId}`,
       {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `JWT ${token}`,
+          Authorization: `JWT ${token}`,
         },
       }
     );
@@ -97,7 +96,7 @@ const TaskPage = () => {
       // Perform any additional actions if required
     } else {
       // Task deletion failed, handle the error
-      console.log('Error deleting task');
+      console.log("Error deleting task");
     }
   };
 
@@ -132,13 +131,11 @@ const TaskPage = () => {
             </thead>
             <tbody>
               {tasks.map((task) => (
-                <tr key={task._id} style={{ cursor: 'pointer' }}>
+                <tr key={task._id} style={{ cursor: "pointer" }}>
                   <td onClick={() => handleTaskClick(task._id)}>
                     {task.patient}
                   </td>
-                  <td onClick={() => handleTaskClick(task._id)}>
-                    {task._id}
-                  </td>
+                  <td onClick={() => handleTaskClick(task._id)}>{task._id}</td>
                   <td className="text-center">
                     <Button
                       variant="danger"
