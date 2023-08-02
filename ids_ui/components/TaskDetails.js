@@ -11,6 +11,7 @@ export default function TaskDetails(props) {
             `https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks/${props.task._id}`,
             {
                 method: 'DELETE',
+                headers: { Authorization: `JWT ${props.token}` },
             }
         );
 
@@ -27,12 +28,26 @@ export default function TaskDetails(props) {
     const handleUpdate = async (e) => {
 
         e.preventDefault();
-        console.log(editedTask);
+        console.log("Edited Task:", editedTask);
         const response = await fetch(
             `https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks/${props.task._id}`,
             {
                 method: 'PUT',
-                body: JSON.stringify(editedTask),
+                body: JSON.stringify({
+                    "type": editedTask.type,
+                    "requestor": editedTask.requestor,
+                    "patient": editedTask.patient,
+                    "location": editedTask.location,
+                    "destination": editedTask.destination,
+                    "isolation": editedTask.isolation,
+                    "notes": editedTask.notes,
+                    "status": "notAssigned",
+                    "transporter": "",
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `JWT ${props.token}`, // Set the request's Content-Type header to indicate JSON data
+                },
             }
         );
 

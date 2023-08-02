@@ -3,10 +3,11 @@ import useSWR from 'swr';
 import { useState, useRef } from 'react';
 import NewTaskForm from '../components/NewTaskForm';
 import Button from 'react-bootstrap/Button';
+import { getToken } from "../lib/authenticate";
 import { Table, Container, Row, Col } from 'react-bootstrap';
 
 const fetcher = async (url) => {
-  const response = await fetch(url);
+  const response = await fetch(url, { headers: { Authorization: `JWT ${getToken()}` } });
   return response.json();
 };
 
@@ -35,12 +36,15 @@ const TaskPage = () => {
     event.preventDefault();
     // Perform any validation checks if required
 
+    const token = getToken();
+
     const response = await fetch(
       'https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `JWT ${token}`,
         },
         body: JSON.stringify(newTask),
       }
@@ -75,10 +79,14 @@ const TaskPage = () => {
   };
 
   const handleDeleteTask = async (taskId) => {
+    const token = getToken();
     const response = await fetch(
       `https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks/${taskId}`,
       {
         method: 'DELETE',
+        headers: {
+          'Authorization': `JWT ${token}`,
+        },
       }
     );
 
