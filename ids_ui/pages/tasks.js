@@ -1,8 +1,8 @@
-import { useRouter } from 'next/router';
-import useSWR from 'swr';
-import { useState, useRef } from 'react';
-import NewTaskForm from '../components/NewTaskForm';
-import Button from 'react-bootstrap/Button';
+import { useRouter } from "next/router";
+import useSWR from "swr";
+import { useState, useRef } from "react";
+import NewTaskForm from "../components/NewTaskForm";
+import Button from "react-bootstrap/Button";
 import { getToken } from "../lib/authenticate";
 import { Table, Container, Row, Col } from 'react-bootstrap';
 import jwtDecode from 'jwt-decode';
@@ -10,25 +10,28 @@ import jwtDecode from 'jwt-decode';
 var taskStatus = "notAssigned";
 
 const fetcher = async (url) => {
-  const response = await fetch(url, { headers: { Authorization: `JWT ${getToken()}` } });
+  const response = await fetch(url, {
+    headers: { Authorization: `JWT ${getToken()}` },
+  });
   return response.json();
 };
 
 const TaskPage = () => {
   const router = useRouter();
-  const { data: tasks, error, mutate } = useSWR(
-    'https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks',
-    fetcher
-  );
+  const {
+    data: tasks,
+    error,
+    mutate,
+  } = useSWR("https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks", fetcher);
 
   const [newTask, setNewTask] = useState({
-    patient: '',
-    destination: '',
-    location: '',
+    patient: "",
+    destination: "",
+    location: "",
     isolation: false,
-    notes: '',
-    requestor: '',
-    type: '',
+    notes: "",
+    requestor: "",
+    type: "",
   });
   const inputRef = useRef();
 
@@ -43,12 +46,12 @@ const TaskPage = () => {
     const token = getToken();
 
     const response = await fetch(
-      'https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks',
+      "https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks",
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `JWT ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `JWT ${token}`,
         },
         body: JSON.stringify(newTask),
       }
@@ -56,26 +59,26 @@ const TaskPage = () => {
 
     if (response.ok) {
       setNewTask({
-        patient: '',
-        destination: '',
-        location: '',
+        patient: "",
+        destination: "",
+        location: "",
         isolation: false,
-        notes: '',
-        requestor: '',
-        type: '',
+        notes: "",
+        requestor: "",
+        type: "",
       });
       inputRef.current.focus();
 
-      const updatedTasks = await fetch(
-        'https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks',
+      const updatedTasks = fetch(
+        "https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks",
         fetcher
       );
 
       // Update the tasks data using the mutate function
-      mutate((updatedTasks).json());
+      mutate((await updatedTasks).json());
     } else {
       // Task addition failed, handle the error
-      console.log('Error adding task');
+      console.log("Error adding task");
     }
   };
 

@@ -159,4 +159,4 @@ export default function TaskDetails(props) {
             </Row>
         </Container>
     );
-}
+};
