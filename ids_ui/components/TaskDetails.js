@@ -1,6 +1,8 @@
 import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import jwt_decode from 'jwt-decode';
+
 
 export default function TaskDetails(props) {
     const router = useRouter();
@@ -28,7 +30,6 @@ export default function TaskDetails(props) {
     const handleUpdate = async (e) => {
 
         e.preventDefault();
-        console.log("Edited Task:", editedTask);
         const response = await fetch(
             `https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks/${props.task._id}`,
             {
@@ -41,8 +42,8 @@ export default function TaskDetails(props) {
                     "destination": editedTask.destination,
                     "isolation": editedTask.isolation,
                     "notes": editedTask.notes,
-                    "status": "notAssigned",
-                    "transporter": "",
+                    "status": props.task.status,
+                    "transporter": props.task.transporter,
                 }),
                 headers: {
                     'Content-Type': 'application/json',
@@ -67,7 +68,7 @@ export default function TaskDetails(props) {
     //         ...prevTask,
     //         [name]: value,
     //     }));
-    // };
+    // }
 
     return (
         <Container>
