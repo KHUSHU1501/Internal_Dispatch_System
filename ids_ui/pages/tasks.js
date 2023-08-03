@@ -4,8 +4,8 @@ import { useState, useRef } from "react";
 import NewTaskForm from "../components/NewTaskForm";
 import Button from "react-bootstrap/Button";
 import { getToken } from "../lib/authenticate";
-import { Table, Container, Row, Col } from 'react-bootstrap';
-import jwtDecode from 'jwt-decode';
+import { Table, Container, Row, Col } from "react-bootstrap";
+import jwtDecode from "jwt-decode";
 
 var taskStatus = "notAssigned";
 
@@ -84,20 +84,20 @@ const TaskPage = () => {
 
   const handleTask = async (task) => {
     // Implement the logic for completing a task here
-    console.log('Starting task', task.type);
+    console.log("Starting task", task.type);
     const token = getToken();
     const response = await fetch(
       `https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks/${task._id}`,
       {
-        method: 'PUT',
+        method: "PUT",
         body: JSON.stringify({
-          "status": taskStatus,
-          "transporter": jwtDecode(token).userName,
+          status: taskStatus,
+          transporter: jwtDecode(token).userName,
         }),
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `JWT ${token}`, // Set the request's Content-Type header to indicate JSON data
-        }
+          "Content-Type": "application/json",
+          Authorization: `JWT ${token}`, // Set the request's Content-Type header to indicate JSON data
+        },
       }
     );
 
@@ -108,26 +108,24 @@ const TaskPage = () => {
       inputRef.current.focus();
 
       const updatedTasks = await fetch(
-        'https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks',
+        "https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks",
         fetcher
       );
 
       // Update the tasks data using the mutate function
-      mutate((updatedTasks).json());
-
+      mutate(updatedTasks.json());
     } else {
       // Task update failed, handle the error
-      console.log('Error updating task');
+      console.log("Error updating task");
     }
   };
 
   const handleTaskStart = async (task) => {
     // Implement the logic for starting a task here
-    console.log('Starting task', task._id);
+    console.log("Starting task", task._id);
     taskStatus = "In Progress";
     handleTask(task);
   };
-
 
   if (error) {
     return <div>Error loading tasks</div>;
@@ -138,10 +136,9 @@ const TaskPage = () => {
   }
 
   const handleDelayTask = (task) => {
-    if (task.status === 'Delayed') {
+    if (task.status === "Delayed") {
       taskStatus = "In Progress";
-    }
-    else {
+    } else {
       taskStatus = "Delayed";
     }
     handleTask(task);
@@ -152,17 +149,17 @@ const TaskPage = () => {
     handleTask(task);
   };
 
-  const filteredTasks = tasks.filter((task) => task.status !== 'Completed');
+  const filteredTasks = tasks.filter((task) => task.status == "notAssigned");
 
   return (
     <Container>
       <br />
       <Row>
         {/* Task table with column width of 8 and a right border */}
-        <Col md={8} style={{ borderRight: '1px solid #ccc' }}>
-          <h2 className="text-center">Current Tasks</h2>
+        <Col md={8} style={{ borderRight: "1px solid #ccc" }}>
+          <h2 className="text-center">Available Tasks</h2>
           <br />
-          <Table striped bordered hover responsive>
+          <Table striped bordered hover responsive id="task-table">
             <thead>
               <tr>
                 <th>Patient</th>
@@ -174,74 +171,98 @@ const TaskPage = () => {
                 <th className="text-center">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {filteredTasks.map((task) => (
-                <tr key={task._id} style={{ cursor: 'pointer' }}>
-                  <td onClick={() => handleTaskClick(task._id)}>
-                    {task.patient}
+            {filteredTasks.length === 0 ? (
+              <tbody>
+                <tr>
+                  <td colSpan="7" className="text-center">
+                    No tasks available
                   </td>
-                  <td onClick={() => handleTaskClick(task._id)}>
-                    {task.location}
-                  </td>
-                  <td onClick={() => handleTaskClick(task._id)}>
-                    {task.destination}
-                  </td>
-                  <td onClick={() => handleTaskClick(task._id)}>
-                    {task.type}
-                  </td>
-                  <td onClick={() => handleTaskClick(task._id)}>
-                    {task.transporter}
-                  </td>
-                  <td style={{ color: task.status === 'In Progress' ? 'green' : task.status === 'notAssigned' ? 'red' : task.status === 'Delayed' ? 'orange' : 'black' }}>
-                    {task.status}
-                  </td>
-                  <td className="text-center">
-                    {task.status === 'notAssigned' && (
-                      <Button
-                        variant="success"
-                        size="sm"
-                        className="mr-2 mb-2"
-                        onClick={() => handleTaskStart(task)}
-                      >
-                        Start
-                      </Button>
-                    )}
-                    {task.status === 'Delayed' && (
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        className="mr-2 mb-2"
-                        onClick={() => handleDelayTask(task)}
-                      >
-                        Remove Delay
-                      </Button>
-                    )}
-                    {task.status === 'In Progress' && (
-                      <>
+                </tr>
+              </tbody>
+            ) : (
+              <tbody>
+                {filteredTasks.map((task) => (
+                  <tr key={task._id} style={{ cursor: "pointer" }}>
+                    <td onClick={() => handleTaskClick(task._id)}>
+                      {task.patient}
+                    </td>
+                    <td onClick={() => handleTaskClick(task._id)}>
+                      {task.location}
+                    </td>
+                    <td onClick={() => handleTaskClick(task._id)}>
+                      {task.destination}
+                    </td>
+                    <td onClick={() => handleTaskClick(task._id)}>
+                      {task.type}
+                    </td>
+                    <td onClick={() => handleTaskClick(task._id)}>
+                      {task.transporter}
+                    </td>
+                    <td
+                      style={{
+                        color:
+                          task.status === "In Progress"
+                            ? "green"
+                            : task.status === "notAssigned"
+                            ? "red"
+                            : task.status === "Delayed"
+                            ? "orange"
+                            : "black",
+                      }}
+                    >
+                      {task.status}
+                    </td>
+                    <td className="text-center">
+                      {task.status === "notAssigned" && (
                         <Button
-                          variant="warning"
+                          id="start-task-button"
+                          variant="success"
+                          size="sm"
+                          className="mr-2 mb-2"
+                          onClick={() => handleTaskStart(task)}
+                        >
+                          Start
+                        </Button>
+                      )}
+                      {task.status === "Delayed" && (
+                        <Button
+                          id="remove-delay-task-button"
+                          variant="secondary"
                           size="sm"
                           className="mr-2 mb-2"
                           onClick={() => handleDelayTask(task)}
                         >
-                          Delay
+                          Remove Delay
                         </Button>
-                        &nbsp;
-                        &nbsp;
-                        <Button
-                          variant="success"
-                          size="sm"
-                          className="mr-2 mb-2"
-                          onClick={() => handleCompleteTask(task)}
-                        >
-                          Complete
-                        </Button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                      )}
+                      {task.status === "In Progress" && (
+                        <>
+                          <Button
+                            id="delay-task-button"
+                            variant="warning"
+                            size="sm"
+                            className="mr-2 mb-2"
+                            onClick={() => handleDelayTask(task)}
+                          >
+                            Delay
+                          </Button>
+                          &nbsp; &nbsp;
+                          <Button
+                            id="complete-task-button"
+                            variant="success"
+                            size="sm"
+                            className="mr-2 mb-2"
+                            onClick={() => handleCompleteTask(task)}
+                          >
+                            Complete
+                          </Button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            )}
           </Table>
         </Col>
         {/* Form with column width of 4 */}
