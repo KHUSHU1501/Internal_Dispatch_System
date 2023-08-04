@@ -1,15 +1,8 @@
 import { useRouter } from "next/router";
-
 import useSWR from "swr";
-
-import { useState } from "react";
-
 import Button from "react-bootstrap/Button";
-
 import { getToken } from "../lib/authenticate";
-
-import { Table, Container, Row, Col } from "react-bootstrap";
-
+import { Table, Container, Row, Col, Image } from "react-bootstrap";
 import jwtDecode from "jwt-decode";
 
 var taskStatus = "notAssigned";
@@ -26,6 +19,7 @@ const MyTasksPage = () => {
   const router = useRouter();
 
   const loggedUser = jwtDecode(getToken()).userName;
+  const loggedUserRole = jwtDecode(getToken()).role;
 
   const {
     data: tasks,
@@ -114,124 +108,143 @@ const MyTasksPage = () => {
   const userTasks = tasks.filter((task) => task.transporter === loggedUser);
 
   return (
-    <Container>
-      <br />
-
-      <Row>
-        {/* Task table with column width of 12 */}
-
-        <Col md={12}>
-          <h2 className="text-center">My Tasks</h2>
-
+    <>
+      {loggedUserRole === "transporter" ? (
+        <Container>
           <br />
 
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr>
-                <th>Patient</th>
+          <Row>
+            {/* Task table with column width of 12 */}
 
-                <th>Current Location</th>
+            <Col md={12}>
+              <h2 className="text-center">My Tasks</h2>
 
-                <th>Destination</th>
+              <br />
 
-                <th>Type</th>
+              <Table striped bordered hover responsive>
+                <thead>
+                  <tr>
+                    <th>Patient</th>
 
-                <th>Transporter</th>
+                    <th>Current Location</th>
 
-                <th>Status</th>
+                    <th>Destination</th>
 
-                <th className="text-center">Actions</th>
-              </tr>
-            </thead>
+                    <th>Type</th>
 
-            <tbody>
-              {userTasks.map((task) => (
-                <tr key={task._id} style={{ cursor: "pointer" }}>
-                  <td onClick={() => handleTaskClick(task._id)}>
-                    {task.patient}
-                  </td>
+                    <th>Transporter</th>
 
-                  <td onClick={() => handleTaskClick(task._id)}>
-                    {task.location}
-                  </td>
+                    <th>Status</th>
 
-                  <td onClick={() => handleTaskClick(task._id)}>
-                    {task.destination}
-                  </td>
+                    <th className="text-center">Actions</th>
+                  </tr>
+                </thead>
 
-                  <td onClick={() => handleTaskClick(task._id)}>{task.type}</td>
+                <tbody>
+                  {userTasks.map((task) => (
+                    <tr key={task._id} style={{ cursor: "pointer" }}>
+                      <td onClick={() => handleTaskClick(task._id)}>
+                        {task.patient}
+                      </td>
 
-                  <td onClick={() => handleTaskClick(task._id)}>
-                    {task.transporter}
-                  </td>
+                      <td onClick={() => handleTaskClick(task._id)}>
+                        {task.location}
+                      </td>
 
-                  <td
-                    style={{
-                      color:
-                        task.status === "In Progress"
-                          ? "green"
-                          : task.status === "notAssigned"
-                          ? "red"
-                          : task.status === "Delayed"
-                          ? "orange"
-                          : "black",
-                    }}
-                  >
-                    {task.status}
-                  </td>
+                      <td onClick={() => handleTaskClick(task._id)}>
+                        {task.destination}
+                      </td>
 
-                  <td className="text-center">
-                    {task.status === "notAssigned" && (
-                      <Button
-                        variant="success"
-                        size="sm"
-                        className="mr-2 mb-2"
-                        onClick={() => handleTaskStart(task)}
+                      <td onClick={() => handleTaskClick(task._id)}>
+                        {task.type}
+                      </td>
+
+                      <td onClick={() => handleTaskClick(task._id)}>
+                        {task.transporter}
+                      </td>
+
+                      <td
+                        style={{
+                          color:
+                            task.status === "In Progress"
+                              ? "green"
+                              : task.status === "notAssigned"
+                              ? "red"
+                              : task.status === "Delayed"
+                              ? "orange"
+                              : "black",
+                        }}
                       >
-                        Start
-                      </Button>
-                    )}
+                        {task.status}
+                      </td>
 
-                    {task.status === "Delayed" && (
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        className="mr-2 mb-2"
-                        onClick={() => handleDelayTask(task)}
-                      >
-                        Remove Delay
-                      </Button>
-                    )}
+                      <td className="text-center">
+                        {task.status === "notAssigned" && (
+                          <Button
+                            variant="success"
+                            size="sm"
+                            className="mr-2 mb-2"
+                            onClick={() => handleTaskStart(task)}
+                          >
+                            Start
+                          </Button>
+                        )}
 
-                    {task.status === "In Progress" && (
-                      <>
-                        <Button
-                          variant="warning"
-                          size="sm"
-                          className="mr-2 mb-2"
-                          onClick={() => handleDelayTask(task)}
-                        >
-                          Delay
-                        </Button>
-                        &nbsp; &nbsp;
-                        <Button
-                          variant="success"
-                          size="sm"
-                          className="mr-2 mb-2"
-                          onClick={() => handleCompleteTask(task)}
-                        >
-                          Complete
-                        </Button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
-    </Container>
+                        {task.status === "Delayed" && (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="mr-2 mb-2"
+                            onClick={() => handleDelayTask(task)}
+                          >
+                            Remove Delay
+                          </Button>
+                        )}
+
+                        {task.status === "In Progress" && (
+                          <>
+                            <Button
+                              variant="warning"
+                              size="sm"
+                              className="mr-2 mb-2"
+                              onClick={() => handleDelayTask(task)}
+                            >
+                              Delay
+                            </Button>
+                            &nbsp; &nbsp;
+                            <Button
+                              variant="success"
+                              size="sm"
+                              className="mr-2 mb-2"
+                              onClick={() => handleCompleteTask(task)}
+                            >
+                              Complete
+                            </Button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Col>
+          </Row>
+        </Container>
+      ) : (
+        <div className="text-center">
+          <h1>Access Denied</h1>
+          <p>You are not authorized to view this page</p>
+          <br />
+          <Image
+            src="https://cdn-icons-png.flaticon.com/512/2996/2996824.png"
+            alt="Access Denied"
+            width={500}
+            height={300}
+            className="img-fluid"
+          />
+        </div>
+      )}
+    </>
   );
 };
 

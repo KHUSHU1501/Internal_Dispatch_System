@@ -2,9 +2,9 @@ import { useRouter } from "next/router";
 
 import useSWR from "swr";
 
-import { useState, useRef } from "react";
+import { useRef } from "react";
 
-import { Table, Container, Row, Col } from "react-bootstrap";
+import { Table, Container, Row, Col, Image } from "react-bootstrap";
 
 import { getToken } from "../lib/authenticate";
 
@@ -30,61 +30,10 @@ const TaskPage = () => {
   } = useSWR("https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks", fetcher);
 
   const inputRef = useRef();
+  const token = getToken();
 
   const handleTaskClick = (taskId) => {
     router.push(`/task/${taskId}`);
-  };
-
-  const handleTask = async (task) => {
-    // Implement the logic for completing a task here
-
-    console.log("Starting task", task.type);
-
-    const token = getToken();
-
-    const response = await fetch(
-      `https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks/${task._id}`,
-
-      {
-        method: "PUT",
-
-        body: JSON.stringify({
-          status: "In Progress",
-
-          transporter: jwtDecode(token).userName,
-        }),
-
-        headers: {
-          "Content-Type": "application/json",
-
-          Authorization: `JWT ${token}`, // Set the request's Content-Type header to indicate JSON data
-        },
-      }
-    );
-
-    if (response.ok) {
-      // Task updated successfully
-
-      // Perform any additional actions if required
-
-      router.push(`/alltasks`);
-
-      inputRef.current.focus();
-
-      const updatedTasks = await fetch(
-        "https://kind-teal-rhinoceros-belt.cyclic.app/api/alltasks",
-
-        fetcher
-      );
-
-      // Update the tasks data using the mutate function
-
-      mutate(updatedTasks.json());
-    } else {
-      // Task update failed, handle the error
-
-      console.log("Error updating task");
-    }
   };
 
   if (error) {
@@ -96,76 +45,95 @@ const TaskPage = () => {
   }
 
   return (
-    <Container>
-      <br />
-
-      <Row>
-        {/* Task table with column width of 8 and a right border */}
-
-        <Col md={12}>
-          <h2 className="text-center">All Tasks</h2>
-
+    <>
+      {jwtDecode(token).role === "nurse" ? (
+        <Container>
           <br />
 
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr>
-                <th>Patient</th>
+          <Row>
+            {/* Task table with column width of 8 and a right border */}
 
-                <th>Current Location</th>
+            <Col md={12}>
+              <h2 className="text-center">All Tasks</h2>
 
-                <th>Destination</th>
+              <br />
 
-                <th>Type</th>
+              <Table striped bordered hover responsive>
+                <thead>
+                  <tr>
+                    <th>Patient</th>
 
-                <th>Transporter</th>
+                    <th>Current Location</th>
 
-                <th>Status</th>
-              </tr>
-            </thead>
+                    <th>Destination</th>
 
-            <tbody>
-              {tasks.map((task) => (
-                <tr key={task._id} style={{ cursor: "pointer" }}>
-                  <td onClick={() => handleTaskClick(task._id)}>
-                    {task.patient}
-                  </td>
+                    <th>Type</th>
 
-                  <td onClick={() => handleTaskClick(task._id)}>
-                    {task.location}
-                  </td>
+                    <th>Transporter</th>
 
-                  <td onClick={() => handleTaskClick(task._id)}>
-                    {task.destination}
-                  </td>
+                    <th>Status</th>
+                  </tr>
+                </thead>
 
-                  <td onClick={() => handleTaskClick(task._id)}>{task.type}</td>
+                <tbody>
+                  {tasks.map((task) => (
+                    <tr key={task._id} style={{ cursor: "pointer" }}>
+                      <td onClick={() => handleTaskClick(task._id)}>
+                        {task.patient}
+                      </td>
 
-                  <td onClick={() => handleTaskClick(task._id)}>
-                    {task.transporter}
-                  </td>
+                      <td onClick={() => handleTaskClick(task._id)}>
+                        {task.location}
+                      </td>
 
-                  <td
-                    style={{
-                      color:
-                        task.status === "In Progress"
-                          ? "green"
-                          : task.status === "notAssigned"
-                          ? "red"
-                          : task.status === "Delayed"
-                          ? "orange"
-                          : "black",
-                    }}
-                  >
-                    {task.status}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
-    </Container>
+                      <td onClick={() => handleTaskClick(task._id)}>
+                        {task.destination}
+                      </td>
+
+                      <td onClick={() => handleTaskClick(task._id)}>
+                        {task.type}
+                      </td>
+
+                      <td onClick={() => handleTaskClick(task._id)}>
+                        {task.transporter}
+                      </td>
+
+                      <td
+                        style={{
+                          color:
+                            task.status === "In Progress"
+                              ? "green"
+                              : task.status === "notAssigned"
+                              ? "red"
+                              : task.status === "Delayed"
+                              ? "orange"
+                              : "black",
+                        }}
+                      >
+                        {task.status}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Col>
+          </Row>
+        </Container>
+      ) : (
+        <div className="text-center">
+          <h1>Access Denied</h1>
+          <p>You are not authorized to view this page</p>
+          <br />
+          <Image
+            src="https://cdn-icons-png.flaticon.com/512/2996/2996824.png"
+            alt="Access Denied"
+            width={500}
+            height={300}
+            className="img-fluid"
+          />
+        </div>
+      )}
+    </>
   );
 };
 
