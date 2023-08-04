@@ -148,6 +148,7 @@ const TaskPage = () => {
                     <th>Current Location</th>
                     <th>Destination</th>
                     <th>Type</th>
+                    <th>Requestor</th>
                     <th>Transporter</th>
                     <th>Status</th>
                     <th>Date Created</th>
@@ -168,6 +169,9 @@ const TaskPage = () => {
                       </td>
                       <td onClick={() => handleTaskClick(task._id)}>
                         {task.type}
+                      </td>
+                      <td onClick={() => handleTaskClick(task._id)}>
+                        {task.requestor}
                       </td>
                       <td onClick={() => handleTaskClick(task._id)}>
                         {task.transporter}

@@ -75,22 +75,6 @@ const NewTaskForm = ({ newTask, setNewTask, handleAddTask, inputRef }) => {
         />
       </Form.Group>
 
-      <Form.Group controlId="requestor">
-        <Form.Label>
-          <strong>Requestor</strong>
-        </Form.Label>
-        <Form.Control
-          id="requestor"
-          type="text"
-          placeholder="Enter requestor"
-          value={newTask.requestor}
-          onChange={(e) =>
-            setNewTask({ ...newTask, requestor: e.target.value })
-          }
-          required
-        />
-      </Form.Group>
-
       <Form.Group controlId="type">
         <Form.Label>
           <strong>Type</strong>

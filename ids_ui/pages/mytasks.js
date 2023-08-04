@@ -116,6 +116,7 @@ const MyTasksPage = () => {
     { label: "Sort by Status", field: "status" },
     { label: "Sort by Date Created", field: "createdAt" },
     { label: "Sort by Date Updated", field: "updatedAt" },
+    { label: "Sort by Requestor", field: "requestor" },
   ];
 
   const handleSort = (field) => {
@@ -150,6 +151,7 @@ const MyTasksPage = () => {
       task.type,
       task.transporter,
       task.status,
+      task.requestor,
     ];
     return taskFields.some((field) =>
       field.toLowerCase().includes(searchText.toLowerCase())
@@ -201,6 +203,7 @@ const MyTasksPage = () => {
                     <th>Current Location</th>
                     <th>Destination</th>
                     <th>Type</th>
+                    <th>Requestor</th>
                     <th>Transporter</th>
                     <th>Status</th>
                     <th className="text-center">Actions</th>
@@ -220,6 +223,9 @@ const MyTasksPage = () => {
                       </td>
                       <td onClick={() => handleTaskClick(task._id)}>
                         {task.type}
+                      </td>
+                      <td onClick={() => handleTaskClick(task._id)}>
+                        {task.requestor}
                       </td>
                       <td onClick={() => handleTaskClick(task._id)}>
                         {task.transporter}
