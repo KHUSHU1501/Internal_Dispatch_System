@@ -10,6 +10,7 @@ import {
   Image,
   Dropdown,
   DropdownButton,
+  Form,
 } from "react-bootstrap";
 import { getToken } from "../lib/authenticate";
 import jwtDecode from "jwt-decode";
@@ -23,6 +24,8 @@ const fetcher = async (url) => {
 };
 
 const TaskPage = () => {
+  const [searchText, setSearchText] = useState("");
+
   const router = useRouter();
   const {
     data: tasks,
@@ -83,6 +86,26 @@ const TaskPage = () => {
     { label: "Sort by Status", field: "status" },
   ];
 
+  // Step 2: Event handler to update the search text state
+  const handleSearchChange = (event) => {
+    setSearchText(event.target.value);
+  };
+
+  // Step 3: Filter tasks based on search text
+  const filteredTasks = sortedTasks.filter((task) => {
+    const taskFields = [
+      task.patient,
+      task.location,
+      task.destination,
+      task.type,
+      task.transporter,
+      task.status,
+    ];
+    return taskFields.some((field) =>
+      field.toLowerCase().includes(searchText.toLowerCase())
+    );
+  });
+
   return (
     <>
       {jwtDecode(token).role === "nurse" ? (
@@ -90,8 +113,8 @@ const TaskPage = () => {
           <br />
           <Row>
             <Col md={12}>
-              <Row className="align-items-center">
-                <Col md={6} className="text-right">
+              <Row className>
+                <Col md={3}>
                   <DropdownButton variant="secondary" title="Sort Tasks">
                     {sortOptions.map((option) => (
                       <Dropdown.Item
@@ -103,8 +126,18 @@ const TaskPage = () => {
                     ))}
                   </DropdownButton>
                 </Col>
-                <Col md={6}>
-                  <h2 className="text-left">All Tasks</h2>
+                <Col md={6} className="text-center">
+                  <h2>All Tasks</h2>
+                </Col>
+                <Col md={3}>
+                  <Form.Group>
+                    <Form.Control
+                      type="text"
+                      placeholder="Search"
+                      value={searchText}
+                      onChange={handleSearchChange}
+                    />
+                  </Form.Group>
                 </Col>
               </Row>
               <br />
@@ -122,7 +155,7 @@ const TaskPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedTasks.map((task) => (
+                  {filteredTasks.map((task) => (
                     <tr key={task._id} style={{ cursor: "pointer" }}>
                       <td onClick={() => handleTaskClick(task._id)}>
                         {task.patient}

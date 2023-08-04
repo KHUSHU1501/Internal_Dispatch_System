@@ -105,7 +105,7 @@ const TaskPage = () => {
     if (response.ok) {
       // Task updated successfully
       // Perform any additional actions if required
-      router.push(`/tasks`);
+      router.push(`/mytasks`);
       inputRef.current.focus();
 
       const updatedTasks = await fetch(
@@ -140,7 +140,6 @@ const TaskPage = () => {
     taskStatus = "Cancelled";
     handleTask(task);
   };
-
 
   const filteredTasks = tasks.filter((task) => task.status == "notAssigned");
 
@@ -197,10 +196,10 @@ const TaskPage = () => {
                           task.status === "In Progress"
                             ? "green"
                             : task.status === "notAssigned"
-                              ? "red"
-                              : task.status === "Delayed"
-                                ? "orange"
-                                : "black",
+                            ? "red"
+                            : task.status === "Delayed"
+                            ? "orange"
+                            : "black",
                       }}
                     >
                       {task.status}
@@ -228,7 +227,6 @@ const TaskPage = () => {
                           Cancel
                         </Button>
                       )}
-
                     </td>
                   </tr>
                 ))}
