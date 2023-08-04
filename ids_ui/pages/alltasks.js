@@ -1,13 +1,17 @@
+import { useState } from "react";
 import { useRouter } from "next/router";
-
 import useSWR from "swr";
-
 import { useRef } from "react";
-
-import { Table, Container, Row, Col, Image } from "react-bootstrap";
-
+import {
+  Table,
+  Container,
+  Row,
+  Col,
+  Image,
+  Dropdown,
+  DropdownButton,
+} from "react-bootstrap";
 import { getToken } from "../lib/authenticate";
-
 import jwtDecode from "jwt-decode";
 
 const fetcher = async (url) => {
@@ -20,21 +24,46 @@ const fetcher = async (url) => {
 
 const TaskPage = () => {
   const router = useRouter();
-
   const {
     data: tasks,
-
     error,
-
     mutate,
   } = useSWR("https://kind-teal-rhinoceros-belt.cyclic.app/api/tasks", fetcher);
 
   const inputRef = useRef();
   const token = getToken();
 
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState("asc");
+
   const handleTaskClick = (taskId) => {
     router.push(`/task/${taskId}`);
   };
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const sortedTasks = tasks
+    ? tasks.sort((a, b) => {
+        if (sortField) {
+          const aValue = a[sortField];
+          const bValue = b[sortField];
+
+          if (sortOrder === "asc") {
+            return aValue.localeCompare(bValue);
+          } else {
+            return bValue.localeCompare(aValue);
+          }
+        }
+        return 0;
+      })
+    : [];
 
   if (error) {
     return <div>Error loading tasks</div>;
@@ -44,60 +73,72 @@ const TaskPage = () => {
     return <div>Loading tasks...</div>;
   }
 
+  const sortOptions = [
+    { label: "Sort by Type", field: "type" },
+    { label: "Sort by Requestor", field: "requestor" },
+    { label: "Sort by Patient", field: "patient" },
+    { label: "Sort by Transporter", field: "transporter" },
+    { label: "Sort by Date Created", field: "createdAt" },
+    { label: "Sort by Date Updated", field: "updatedAt" },
+    { label: "Sort by Status", field: "status" },
+  ];
+
   return (
     <>
       {jwtDecode(token).role === "nurse" ? (
         <Container>
           <br />
-
           <Row>
-            {/* Task table with column width of 8 and a right border */}
-
             <Col md={12}>
-              <h2 className="text-center">All Tasks</h2>
-
+              <Row className="align-items-center">
+                <Col md={6} className="text-right">
+                  <DropdownButton variant="secondary" title="Sort Tasks">
+                    {sortOptions.map((option) => (
+                      <Dropdown.Item
+                        key={option.field}
+                        onClick={() => handleSort(option.field)}
+                      >
+                        {option.label}
+                      </Dropdown.Item>
+                    ))}
+                  </DropdownButton>
+                </Col>
+                <Col md={6}>
+                  <h2 className="text-left">All Tasks</h2>
+                </Col>
+              </Row>
               <br />
-
               <Table striped bordered hover responsive>
                 <thead>
                   <tr>
                     <th>Patient</th>
-
                     <th>Current Location</th>
-
                     <th>Destination</th>
-
                     <th>Type</th>
-
                     <th>Transporter</th>
-
                     <th>Status</th>
+                    <th>Date Created</th>
+                    <th>Date Updated</th>
                   </tr>
                 </thead>
-
                 <tbody>
-                  {tasks.map((task) => (
+                  {sortedTasks.map((task) => (
                     <tr key={task._id} style={{ cursor: "pointer" }}>
                       <td onClick={() => handleTaskClick(task._id)}>
                         {task.patient}
                       </td>
-
                       <td onClick={() => handleTaskClick(task._id)}>
                         {task.location}
                       </td>
-
                       <td onClick={() => handleTaskClick(task._id)}>
                         {task.destination}
                       </td>
-
                       <td onClick={() => handleTaskClick(task._id)}>
                         {task.type}
                       </td>
-
                       <td onClick={() => handleTaskClick(task._id)}>
                         {task.transporter}
                       </td>
-
                       <td
                         style={{
                           color:
@@ -111,6 +152,12 @@ const TaskPage = () => {
                         }}
                       >
                         {task.status}
+                      </td>
+                      <td onClick={() => handleTaskClick(task._id)}>
+                        {new Date(task.createdAt).toLocaleString()}
+                      </td>
+                      <td onClick={() => handleTaskClick(task._id)}>
+                        {new Date(task.updatedAt).toLocaleString()}
                       </td>
                     </tr>
                   ))}
