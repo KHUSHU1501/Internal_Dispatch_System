@@ -8,6 +8,7 @@ import { Table, Container, Row, Col } from "react-bootstrap";
 import jwtDecode from "jwt-decode";
 
 var taskStatus = "notAssigned";
+const token = getToken();
 
 const fetcher = async (url) => {
   const response = await fetch(url, {
@@ -135,19 +136,11 @@ const TaskPage = () => {
     return <div>Loading tasks...</div>;
   }
 
-  const handleDelayTask = (task) => {
-    if (task.status === "Delayed") {
-      taskStatus = "In Progress";
-    } else {
-      taskStatus = "Delayed";
-    }
+  const handleCancelTask = (task) => {
+    taskStatus = "Cancelled";
     handleTask(task);
   };
 
-  const handleCompleteTask = (task) => {
-    taskStatus = "Completed";
-    handleTask(task);
-  };
 
   const filteredTasks = tasks.filter((task) => task.status == "notAssigned");
 
@@ -204,16 +197,16 @@ const TaskPage = () => {
                           task.status === "In Progress"
                             ? "green"
                             : task.status === "notAssigned"
-                            ? "red"
-                            : task.status === "Delayed"
-                            ? "orange"
-                            : "black",
+                              ? "red"
+                              : task.status === "Delayed"
+                                ? "orange"
+                                : "black",
                       }}
                     >
                       {task.status}
                     </td>
                     <td className="text-center">
-                      {task.status === "notAssigned" && (
+                      {jwtDecode(token).role === "transporter" && (
                         <Button
                           id="start-task-button"
                           variant="success"
@@ -224,40 +217,18 @@ const TaskPage = () => {
                           Start
                         </Button>
                       )}
-                      {task.status === "Delayed" && (
+                      {jwtDecode(token).role === "nurse" && (
                         <Button
-                          id="remove-delay-task-button"
-                          variant="secondary"
+                          id="cancel-task-button"
+                          variant="danger"
                           size="sm"
                           className="mr-2 mb-2"
-                          onClick={() => handleDelayTask(task)}
+                          onClick={() => handleCancelTask(task)}
                         >
-                          Remove Delay
+                          Cancel
                         </Button>
                       )}
-                      {task.status === "In Progress" && (
-                        <>
-                          <Button
-                            id="delay-task-button"
-                            variant="warning"
-                            size="sm"
-                            className="mr-2 mb-2"
-                            onClick={() => handleDelayTask(task)}
-                          >
-                            Delay
-                          </Button>
-                          &nbsp; &nbsp;
-                          <Button
-                            id="complete-task-button"
-                            variant="success"
-                            size="sm"
-                            className="mr-2 mb-2"
-                            onClick={() => handleCompleteTask(task)}
-                          >
-                            Complete
-                          </Button>
-                        </>
-                      )}
+
                     </td>
                   </tr>
                 ))}
