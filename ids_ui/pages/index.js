@@ -44,13 +44,13 @@ export default function Home() {
                 assign tasks, track their progress, and monitor real-time
                 updates in a centralized dashboard. Nurses, doctors, and support
                 staff can communicate instantly through secure channels,
-                improving response times and promoting collaboration. Whether
-                it's requesting medical supplies, alerting the rapid response
+                improving response times and promoting collaboration. Whether it
+                is requesting medical supplies, alerting the rapid response
                 team, or coordinating patient transfers, our system simplifies
                 the process, reducing delays and enhancing overall efficiency.
                 Additionally, its user-friendly interface requires minimal
                 training, making it easy for all hospital staff to adopt and
-                integrate into their daily routines. Elevate your hospital's
+                integrate into their daily routines. Elevate your hospital
                 operations to a new level of productivity and patient care with
                 our internal dispatch system today!
               </p>
