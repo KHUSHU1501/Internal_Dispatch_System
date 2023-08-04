@@ -11,69 +11,69 @@ import { readToken, removeToken } from "@/lib/authenticate";
 import { useRouter } from "next/router";
 
 export default function MainNav() {
-   const router = useRouter();
+  const router = useRouter();
 
-   let token = readToken();
-   console.log(token);
+  let token = readToken();
 
-   function logout() {
-      removeToken();
+  console.log(token);
 
-      router.push("/");
-   }
+  function logout() {
+    removeToken();
 
-   return (
-      <>
-         <Navbar className="fixed-top navbar-dark bg-dark" bg="light" expand="lg">
-            <Container>
-               <Navbar.Brand href="/" passHref legacyBehavior>
-                  Internal Dispatch System {token && <>- Welcome {token.userName}</>}
-               </Navbar.Brand>
+    router.push("/");
+  }
 
-               <Navbar.Toggle aria-controls="basic-navbar-nav" />
+  return (
+    <>
+      <Navbar className="fixed-top navbar-dark bg-dark" bg="light" expand="lg">
+        <Container>
+          <Navbar.Brand href="/" passHref legacyBehavior>
+            Internal Dispatch System {token && <>- Welcome {token.userName}</>}
+          </Navbar.Brand>
 
-               <Navbar.Collapse id="basic-navbar-nav">
-                  <Nav className="me-auto">
-                     <Link href="/" passHref legacyBehavior>
-                        <Nav.Link>Home</Nav.Link>
-                     </Link>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
-                     {token && token.role === "nurse" && (
-                        <Link href="/alltasks" passHref legacyBehavior>
-                           <Nav.Link>All Tasks</Nav.Link>
-                        </Link>
-                     )}
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <Link href="/" passHref legacyBehavior>
+                <Nav.Link>Home</Nav.Link>
+              </Link>
 
-                     {token && (
-                        <Link href="/tasks" passHref legacyBehavior>
-                           <Nav.Link>Available Tasks</Nav.Link>
-                        </Link>
-                     )}
+              {token && token.role === "nurse" && (
+                <Link href="/alltasks" passHref legacyBehavior>
+                  <Nav.Link>All Tasks</Nav.Link>
+                </Link>
+              )}
 
-                     {token && token.role === "transporter" && (
-                        <Link href="/mytasks" passHref legacyBehavior>
-                           <Nav.Link>My Tasks</Nav.Link>
-                        </Link>
-                     )}
-                  </Nav>
+              {token && (
+                <Link href="/tasks" passHref legacyBehavior>
+                  <Nav.Link>Available Tasks</Nav.Link>
+                </Link>
+              )}
 
-                  <Nav className="ml-auto">
-                     {!token && (
-                        <Link href="/login" passHref legacyBehavior>
-                           <Nav.Link>Login</Nav.Link>
-                        </Link>
-                     )}
+              {token && token.role === "transporter" && (
+                <Link href="/mytasks" passHref legacyBehavior>
+                  <Nav.Link>My Tasks</Nav.Link>
+                </Link>
+              )}
+            </Nav>
 
-                     {token && <Nav.Link onClick={logout}>Logout</Nav.Link>}
-                  </Nav>
-               </Navbar.Collapse>
-            </Container>
-         </Navbar>
+            <Nav className="ml-auto">
+              {!token && (
+                <Link href="/login" passHref legacyBehavior>
+                  <Nav.Link>Login</Nav.Link>
+                </Link>
+              )}
 
-         <br />
+              {token && <Nav.Link onClick={logout}>Logout</Nav.Link>}
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
-         <br />
-      </>
-   );
+      <br />
+
+      <br />
+    </>
+  );
 }
-
